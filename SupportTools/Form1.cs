@@ -10,11 +10,16 @@ using System.Windows.Forms;
 
 namespace SupportTools
 {
-    public partial class Form1 : Form
+    public partial class SupportToolsForm : Form
     {
-        public Form1()
+        public SupportToolsForm()
         {
             InitializeComponent();
+        }
+
+        private void btnClearCache_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
