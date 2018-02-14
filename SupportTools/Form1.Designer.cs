@@ -30,8 +30,14 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageWifiCache = new System.Windows.Forms.TabPage();
+            this.lblStatusContent = new System.Windows.Forms.Label();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.pbrClearCache = new System.Windows.Forms.ProgressBar();
             this.btnClearCache = new System.Windows.Forms.Button();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
+            this.gbxClearpassLogging = new System.Windows.Forms.GroupBox();
+            this.txtLogPath = new System.Windows.Forms.TextBox();
+            this.chkEnableLogging = new System.Windows.Forms.CheckBox();
             this.gbxClearpassStartPageUrl = new System.Windows.Forms.GroupBox();
             this.txtClearpassStartPageUrl = new System.Windows.Forms.TextBox();
             this.gbxClearpassCredentials = new System.Windows.Forms.GroupBox();
@@ -39,10 +45,10 @@
             this.lblUsername = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.txtUsername = new System.Windows.Forms.TextBox();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.tabControl1.SuspendLayout();
             this.tabPageWifiCache.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
+            this.gbxClearpassLogging.SuspendLayout();
             this.gbxClearpassStartPageUrl.SuspendLayout();
             this.gbxClearpassCredentials.SuspendLayout();
             this.SuspendLayout();
@@ -55,19 +61,48 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(487, 327);
+            this.tabControl1.Size = new System.Drawing.Size(400, 299);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPageWifiCache
             // 
+            this.tabPageWifiCache.Controls.Add(this.lblStatusContent);
+            this.tabPageWifiCache.Controls.Add(this.lblStatus);
+            this.tabPageWifiCache.Controls.Add(this.pbrClearCache);
             this.tabPageWifiCache.Controls.Add(this.btnClearCache);
             this.tabPageWifiCache.Location = new System.Drawing.Point(4, 22);
             this.tabPageWifiCache.Name = "tabPageWifiCache";
             this.tabPageWifiCache.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageWifiCache.Size = new System.Drawing.Size(479, 301);
+            this.tabPageWifiCache.Size = new System.Drawing.Size(392, 273);
             this.tabPageWifiCache.TabIndex = 0;
             this.tabPageWifiCache.Text = "WifiCache";
             this.tabPageWifiCache.UseVisualStyleBackColor = true;
+            // 
+            // lblStatusContent
+            // 
+            this.lblStatusContent.AutoSize = true;
+            this.lblStatusContent.Location = new System.Drawing.Point(130, 45);
+            this.lblStatusContent.Name = "lblStatusContent";
+            this.lblStatusContent.Size = new System.Drawing.Size(0, 13);
+            this.lblStatusContent.TabIndex = 4;
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Location = new System.Drawing.Point(87, 45);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(37, 13);
+            this.lblStatus.TabIndex = 3;
+            this.lblStatus.Text = "Status";
+            // 
+            // pbrClearCache
+            // 
+            this.pbrClearCache.Location = new System.Drawing.Point(6, 35);
+            this.pbrClearCache.Maximum = 7;
+            this.pbrClearCache.Name = "pbrClearCache";
+            this.pbrClearCache.Size = new System.Drawing.Size(75, 23);
+            this.pbrClearCache.Step = 1;
+            this.pbrClearCache.TabIndex = 2;
             // 
             // btnClearCache
             // 
@@ -81,15 +116,46 @@
             // 
             // tabPageSettings
             // 
+            this.tabPageSettings.Controls.Add(this.gbxClearpassLogging);
             this.tabPageSettings.Controls.Add(this.gbxClearpassStartPageUrl);
             this.tabPageSettings.Controls.Add(this.gbxClearpassCredentials);
             this.tabPageSettings.Location = new System.Drawing.Point(4, 22);
             this.tabPageSettings.Name = "tabPageSettings";
             this.tabPageSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSettings.Size = new System.Drawing.Size(479, 301);
+            this.tabPageSettings.Size = new System.Drawing.Size(392, 273);
             this.tabPageSettings.TabIndex = 1;
             this.tabPageSettings.Text = "Settings";
             this.tabPageSettings.UseVisualStyleBackColor = true;
+            // 
+            // gbxClearpassLogging
+            // 
+            this.gbxClearpassLogging.Controls.Add(this.txtLogPath);
+            this.gbxClearpassLogging.Controls.Add(this.chkEnableLogging);
+            this.gbxClearpassLogging.Location = new System.Drawing.Point(6, 170);
+            this.gbxClearpassLogging.Name = "gbxClearpassLogging";
+            this.gbxClearpassLogging.Size = new System.Drawing.Size(217, 68);
+            this.gbxClearpassLogging.TabIndex = 2;
+            this.gbxClearpassLogging.TabStop = false;
+            this.gbxClearpassLogging.Text = "Clearpass logging";
+            // 
+            // txtLogPath
+            // 
+            this.txtLogPath.Location = new System.Drawing.Point(6, 42);
+            this.txtLogPath.Name = "txtLogPath";
+            this.txtLogPath.Size = new System.Drawing.Size(202, 20);
+            this.txtLogPath.TabIndex = 1;
+            this.txtLogPath.DoubleClick += new System.EventHandler(this.txtLogPath_DoubleClick);
+            // 
+            // chkEnableLogging
+            // 
+            this.chkEnableLogging.AutoSize = true;
+            this.chkEnableLogging.Location = new System.Drawing.Point(6, 19);
+            this.chkEnableLogging.Name = "chkEnableLogging";
+            this.chkEnableLogging.Size = new System.Drawing.Size(96, 17);
+            this.chkEnableLogging.TabIndex = 0;
+            this.chkEnableLogging.Text = "Enable logging";
+            this.chkEnableLogging.UseVisualStyleBackColor = true;
+            this.chkEnableLogging.CheckedChanged += new System.EventHandler(this.chkEnableLogging_CheckedChanged);
             // 
             // gbxClearpassStartPageUrl
             // 
@@ -147,7 +213,6 @@
             this.txtPassword.PasswordChar = '•';
             this.txtPassword.Size = new System.Drawing.Size(100, 20);
             this.txtPassword.TabIndex = 1;
-            this.txtPassword.Text = "Hech0Fvlfnkjy2100ckrceT6";
             // 
             // txtUsername
             // 
@@ -155,20 +220,24 @@
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(100, 20);
             this.txtUsername.TabIndex = 0;
-            this.txtUsername.Text = "y.tretyakov";
             // 
             // SupportToolsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(487, 327);
+            this.ClientSize = new System.Drawing.Size(400, 299);
             this.Controls.Add(this.tabControl1);
             this.Name = "SupportToolsForm";
             this.Text = "Support Tools";
             this.Deactivate += new System.EventHandler(this.SupportToolsForm_Deactivate);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SupportToolsForm_FormClosed);
+            this.Load += new System.EventHandler(this.SupportToolsForm_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPageWifiCache.ResumeLayout(false);
+            this.tabPageWifiCache.PerformLayout();
             this.tabPageSettings.ResumeLayout(false);
+            this.gbxClearpassLogging.ResumeLayout(false);
+            this.gbxClearpassLogging.PerformLayout();
             this.gbxClearpassStartPageUrl.ResumeLayout(false);
             this.gbxClearpassStartPageUrl.PerformLayout();
             this.gbxClearpassCredentials.ResumeLayout(false);
@@ -189,8 +258,13 @@
         private System.Windows.Forms.TextBox txtUsername;
         private System.Windows.Forms.Button btnClearCache;
         private System.Windows.Forms.GroupBox gbxClearpassStartPageUrl;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.TextBox txtClearpassStartPageUrl;
+        private System.Windows.Forms.Label lblStatusContent;
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.ProgressBar pbrClearCache;
+        private System.Windows.Forms.GroupBox gbxClearpassLogging;
+        private System.Windows.Forms.TextBox txtLogPath;
+        private System.Windows.Forms.CheckBox chkEnableLogging;
     }
 }
 
