@@ -26,18 +26,21 @@ namespace SupportTools
         HtmlElement element;
         HtmlElementCollection elc;
         SynchronizationContext BrowserThreadContext;
-        
+        SynchronizationContext WorkThreadContext;
+        Thread th;
 
         public SupportToolsForm()
         {
             InitializeComponent();
             IsPageLoaded = false;
-            
 
         }
         
         private void btnClearCache_Click(object sender, EventArgs e)
         {
+            btnClearCache.Enabled = false;
+            pbrClearCache.Value = 0;
+            
             try
             {
                 Thread WorkThread = new Thread(new ThreadStart(WorkThreadJob));
@@ -53,6 +56,13 @@ namespace SupportTools
 
         public void WorkThreadJob()
         {
+ 
+            var context = new SynchronizationContext();
+            
+            SynchronizationContext.SetSynchronizationContext(context);
+
+            WorkThreadContext = SynchronizationContext.Current;
+
             RunBrowserThread(new Uri(txtClearpassStartPageUrl.Text));
 
             Invoke(new Action(() =>
@@ -60,57 +70,78 @@ namespace SupportTools
                 lblStatusContent.Text = "Initial page loading";
             }));
 
-            WriteLog("Initial load - BW");
-            Wait(1000, false);
-            WriteLog("Initial load - AW");
+            WriteLog("Initial load");
+
             UpdateClearCacheProgressAndStatus("Proceeding logon");
-            MakeAction("username", "value", txtUsername.Text);
-            MakeAction("password", "value", txtPassword.Text);
-            MakeAction("submit_btn", "Click");
-            WriteLog("Creds load - BW");
-            Wait(1000, false);
-            WriteLog("Creds load - AW");
+            MakeAction("username", "value", txtUsername.Text, false);
+            MakeAction("password", "value", txtPassword.Text, true);
+            MakeAction("submit_btn", "Click", true);
+
+            WriteLog("Creds load");
+            
             UpdateClearCacheProgressAndStatus("Clicking configuration");
-            MakeAction("menu_5_5_button", "Click");
-            WriteLog("Menu 5.5 - BW");
-            Wait(1000, true);
-            WriteLog("Menu 5.5 - AW");
+            MakeAction("menu_5_5_button", "Click", false);
+            WriteLog("Menu 5.5");
+
             UpdateClearCacheProgressAndStatus("Clicking authentication");
-            GetHtmlElementByTagDelegate("span", "Authentication");
+
+            GetHtmlElementByTagSafe("span", "Authentication", false, true);
             
             if (element.GetAttribute("aria-expanded").Equals("false"))
             {
                 MakeAction(element, "Click");
-                WriteLog("Auth load - BW");
-                Wait(1000, true);
-                WriteLog("Auth load - AW");
+                WriteLog("Auth load");
+
             }
             UpdateClearCacheProgressAndStatus("Clicking sources");
-            GetHtmlElementByTagDelegate("span", "Sources");
+            GetHtmlElementByTagSafe("span", "Sources", false, true);
             MakeAction(element, "Click");
-            WriteLog("Source load - BW");
-            Wait(1000, false);
-            WriteLog("Source load - AW");
+            WriteLog("Source load");
+
             UpdateClearCacheProgressAndStatus("Clicking Kernel_AD");
-            GetHtmlElementByTagDelegate("span", "Kernel_AD");
+            GetHtmlElementByTagSafe("span", "Kernel_AD", false, false);
             HtmlElement bottomEl = element;
             element = bottomEl.Parent;
 
             MakeAction(element, "Click");
-            WriteLog("Kernel-AD load - BW");
-            Wait(1000, false);
-            WriteLog("Kernel-AD load - AW");
+            WriteLog("Kernel-AD load");
+
             UpdateClearCacheProgressAndStatus("Clearing cache");
-            MakeAction("authSources-clearCache", "Click");
-            WriteLog("Cache button click - BW");
-            Wait(1000, true);
-            WriteLog("Cache button click - AW");
+            MakeAction("authSources-clearCache", "Click", false);
+            WriteLog("Cache button click");
+            
             GetHtmlElementDelegate("msgBarTxt");
+
             if (element != null)
             {
-                UpdateClearCacheProgressAndStatus(element.GetAttribute("InnerText"));
+                for (int i = 0; i < 10; i++)
+                {
+                    if (element.GetAttribute("InnerText") != "")
+                    {
+                        UpdateClearCacheProgressAndStatus(element.GetAttribute("InnerText"));
+                        break;
+                    }
+                    else
+                    {
+                        if (i > 9)
+                            UpdateClearCacheProgressAndStatus("Clearing cache failed");
+                    }
+                    Wait(10, true);
+
+                }
+                
             }
 
+            Invoke(new Action(() =>
+            {
+               btnClearCache.Enabled = true;
+            }));
+
+            BrowserThreadContext.Send(delegate
+            {
+                Application.ExitThread();
+            }, null);
+            
         }
         public void UpdateClearCacheProgressAndStatus (string message)
         {
@@ -130,29 +161,56 @@ namespace SupportTools
             }
         }
 
-        public void MakeAction (string elementId, string AttributeName, string AttributeValue)
+        public void MakeAction (string elementId, string AttributeName, string AttributeValue, bool DontWait)
         {
-            GetHtmlElementDelegate(elementId);
-            if (element != null)
+            element = null;
+            int index = 0;
+            if (!DontWait)
+                Wait(10, false);
+
+            while (element == null)
             {
-                element.SetAttribute(AttributeName, AttributeValue);
-            }
-            else
-            {
-                MessageBox.Show("Element is NULL - " + elementId);
+                GetHtmlElementDelegate(elementId);
+                if (element != null)
+                {
+                    element.SetAttribute(AttributeName, AttributeValue);
+                }
+                else 
+                {
+                    if (index > 10)
+                    {
+                        MessageBox.Show("Maximum attempts reached, Element is NULL - " + elementId);
+                        break;
+                    }
+                    Wait(10, false);
+                }
+                index++;
             }
         }
 
-        public void MakeAction(string elementId, string InvokeMethod)
+        public void MakeAction(string elementId, string InvokeMethod, bool DontWait)
         {
-            GetHtmlElementDelegate(elementId);
-            if (element != null)
+            element = null;
+            int index = 0;
+            if (!DontWait)
+                Wait(10, false);
+            while (element == null)
             {
-                element.InvokeMember(InvokeMethod);
-            }
-            else
-            {
-                MessageBox.Show("Element is NULL - " + elementId);
+                GetHtmlElementDelegate(elementId);
+                if (element != null)
+                {
+                    element.InvokeMember(InvokeMethod);
+                }
+                else
+                {
+                    if (index > 10)
+                    {
+                        MessageBox.Show("Maximum attempts reached, Element is NULL - " + elementId);
+                        break;
+                    }
+                    Wait(10, false);
+                }
+                index++;
             }
         }
 
@@ -165,6 +223,29 @@ namespace SupportTools
             else
             {
                 MessageBox.Show("Element is NULL");
+            }
+
+        }
+
+        public void GetHtmlElementByTagSafe(string tag, string tagName, bool DontWait, bool IsScriptInvoked)
+        {
+            element = null;
+            int index = 0;
+            if (!DontWait)
+                Wait(10, IsScriptInvoked);
+            while (element == null)
+            {
+                GetHtmlElementByTagDelegate(tag, tagName);
+                if (element == null)
+                {
+                    if (index > 10)
+                    {
+                        MessageBox.Show("Maximum attempts reached, Element is NULL");
+                        break;
+                    }
+                Wait(10, IsScriptInvoked);
+                }
+                index++;
             }
         }
 
@@ -184,6 +265,8 @@ namespace SupportTools
             } while ((IsScriptInvoked ? false : !IsPageLoaded) || IsBrowserBusy);
             IsPageLoaded = false;
 
+            Thread.Sleep(100);
+
         }
 
         public void BrIsBusyDelegate ()
@@ -197,6 +280,7 @@ namespace SupportTools
         
         public void GetHtmlElementDelegate(string id)
         {
+            
             if (Browser.InvokeRequired)
             {
                 Browser.Invoke((MethodInvoker)delegate ()
@@ -206,7 +290,7 @@ namespace SupportTools
             }
             else
             {
-                element = Browser.Document.GetElementById(id);
+               element = Browser.Document.GetElementById(id);
             }
             
         }
@@ -229,7 +313,8 @@ namespace SupportTools
                     {
                         element = el;
                     }
-                 }
+                }
+
             }
         }
 
@@ -253,13 +338,14 @@ namespace SupportTools
         
         private void RunBrowserThread(Uri url)
         {
-            var th = new Thread(() => {        
+                th = new Thread(() => {        
                 Browser = new WebBrowser();
                 BrowserThreadContext = SynchronizationContext.Current;
                 Browser.ScriptErrorsSuppressed = false;            
                 Browser.DocumentCompleted += BrowserDocumentCompleted;            
                 Browser.Navigate(url);            
-                Application.Run();            
+                Application.Run();
+ 
             });        
             th.SetApartmentState(ApartmentState.STA);        
             th.Start();       
@@ -268,12 +354,12 @@ namespace SupportTools
         void BrowserDocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             var br = sender as WebBrowser;
-
+           
             if (br.Url == e.Url)
             {
                 IsPageLoaded = true;
             }
-            
+              
         }
 
         private void SupportToolsForm_Deactivate(object sender, EventArgs e)
@@ -283,7 +369,7 @@ namespace SupportTools
 
         public void WriteLog(string Message)
         {
-            if (chkEnableLogging.Enabled)
+            if (chkEnableLogging.Checked)
             {
                 string CurrentTime = DateTime.Now.ToLongTimeString();
                 string WriteLogPath = txtLogPath.Text;

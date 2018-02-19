@@ -173,7 +173,6 @@
             this.txtClearpassStartPageUrl.Name = "txtClearpassStartPageUrl";
             this.txtClearpassStartPageUrl.Size = new System.Drawing.Size(202, 20);
             this.txtClearpassStartPageUrl.TabIndex = 0;
-            this.txtClearpassStartPageUrl.Text = "https://10.1.10.203/tips/tipsLogin.action";
             // 
             // gbxClearpassCredentials
             // 
