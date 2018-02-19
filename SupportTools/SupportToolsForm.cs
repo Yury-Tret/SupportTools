@@ -33,6 +33,7 @@ namespace SupportTools
         {
             InitializeComponent();
             IsPageLoaded = false;
+            lblVersion.Text = Application.ProductVersion;
 
         }
         
@@ -155,10 +156,18 @@ namespace SupportTools
         public void AcceptSslCertificate()
         {
             int nWinHandle = FindWindow(null, "Security Alert");
+            int nWinHandle2 = FindWindow(null, "Message From Webpage");
             if (nWinHandle != 0)
             {
                 SendKeys.Send("Y%");
             }
+            if (nWinHandle2 != 0)
+            {
+                SendKeys.Send("{ENTER}");
+            }
+
+            Activate();
+
         }
 
         public void MakeAction (string elementId, string AttributeName, string AttributeValue, bool DontWait)

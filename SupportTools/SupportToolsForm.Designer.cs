@@ -45,6 +45,7 @@
             this.lblUsername = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.txtUsername = new System.Windows.Forms.TextBox();
+            this.lblVersion = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPageWifiCache.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
@@ -116,6 +117,7 @@
             // 
             // tabPageSettings
             // 
+            this.tabPageSettings.Controls.Add(this.lblVersion);
             this.tabPageSettings.Controls.Add(this.gbxClearpassLogging);
             this.tabPageSettings.Controls.Add(this.gbxClearpassStartPageUrl);
             this.tabPageSettings.Controls.Add(this.gbxClearpassCredentials);
@@ -220,6 +222,14 @@
             this.txtUsername.Size = new System.Drawing.Size(100, 20);
             this.txtUsername.TabIndex = 0;
             // 
+            // lblVersion
+            // 
+            this.lblVersion.AutoSize = true;
+            this.lblVersion.Location = new System.Drawing.Point(4, 257);
+            this.lblVersion.Name = "lblVersion";
+            this.lblVersion.Size = new System.Drawing.Size(0, 13);
+            this.lblVersion.TabIndex = 3;
+            // 
             // SupportToolsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -235,6 +245,7 @@
             this.tabPageWifiCache.ResumeLayout(false);
             this.tabPageWifiCache.PerformLayout();
             this.tabPageSettings.ResumeLayout(false);
+            this.tabPageSettings.PerformLayout();
             this.gbxClearpassLogging.ResumeLayout(false);
             this.gbxClearpassLogging.PerformLayout();
             this.gbxClearpassStartPageUrl.ResumeLayout(false);
@@ -264,6 +275,7 @@
         private System.Windows.Forms.GroupBox gbxClearpassLogging;
         private System.Windows.Forms.TextBox txtLogPath;
         private System.Windows.Forms.CheckBox chkEnableLogging;
+        private System.Windows.Forms.Label lblVersion;
     }
 }
 
