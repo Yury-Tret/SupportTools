@@ -35,6 +35,7 @@
             this.pbrClearCache = new System.Windows.Forms.ProgressBar();
             this.btnClearCache = new System.Windows.Forms.Button();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
+            this.lblVersion = new System.Windows.Forms.Label();
             this.gbxClearpassLogging = new System.Windows.Forms.GroupBox();
             this.txtLogPath = new System.Windows.Forms.TextBox();
             this.chkEnableLogging = new System.Windows.Forms.CheckBox();
@@ -45,7 +46,6 @@
             this.lblUsername = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.txtUsername = new System.Windows.Forms.TextBox();
-            this.lblVersion = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPageWifiCache.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
@@ -128,6 +128,14 @@
             this.tabPageSettings.TabIndex = 1;
             this.tabPageSettings.Text = "Settings";
             this.tabPageSettings.UseVisualStyleBackColor = true;
+            // 
+            // lblVersion
+            // 
+            this.lblVersion.AutoSize = true;
+            this.lblVersion.Location = new System.Drawing.Point(4, 257);
+            this.lblVersion.Name = "lblVersion";
+            this.lblVersion.Size = new System.Drawing.Size(0, 13);
+            this.lblVersion.TabIndex = 3;
             // 
             // gbxClearpassLogging
             // 
@@ -221,14 +229,6 @@
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(100, 20);
             this.txtUsername.TabIndex = 0;
-            // 
-            // lblVersion
-            // 
-            this.lblVersion.AutoSize = true;
-            this.lblVersion.Location = new System.Drawing.Point(4, 257);
-            this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(0, 13);
-            this.lblVersion.TabIndex = 3;
             // 
             // SupportToolsForm
             // 

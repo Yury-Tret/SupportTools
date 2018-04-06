@@ -10,6 +10,7 @@ namespace SupportTools
     {
         public string username { get; set; }
         public string password { get; set; }
+        public string key { get; set; }
         public string startPage { get; set; }
         public bool enableLogging;
         public string logPath { get; set; }

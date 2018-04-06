@@ -11,15 +11,16 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Xml.Serialization;
+using clib;
 
 namespace SupportTools
 {
     public partial class SupportToolsForm : Form
     {
-
+        
         [DllImport("user32.dll", EntryPoint = "FindWindow")]
         private static extern int FindWindow(string sClass, string sWindow);
-
+        
         WebBrowser Browser;
         bool IsPageLoaded;
         bool IsBrowserBusy;
@@ -70,19 +71,19 @@ namespace SupportTools
             {
                 lblStatusContent.Text = "Initial page loading";
             }));
-
-            WriteLog("Initial load");
+            WriteLog("", true);
+            WriteLog("Initial load", false);
 
             UpdateClearCacheProgressAndStatus("Proceeding logon");
             MakeAction("username", "value", txtUsername.Text, false);
             MakeAction("password", "value", txtPassword.Text, true);
             MakeAction("submit_btn", "Click", true);
 
-            WriteLog("Creds load");
+            WriteLog("Creds load", false);
             
             UpdateClearCacheProgressAndStatus("Clicking configuration");
             MakeAction("menu_5_5_button", "Click", false);
-            WriteLog("Menu 5.5");
+            WriteLog("Menu 5.5", false);
 
             UpdateClearCacheProgressAndStatus("Clicking authentication");
 
@@ -91,13 +92,13 @@ namespace SupportTools
             if (element.GetAttribute("aria-expanded").Equals("false"))
             {
                 MakeAction(element, "Click");
-                WriteLog("Auth load");
+                WriteLog("Auth load", false);
 
             }
             UpdateClearCacheProgressAndStatus("Clicking sources");
             GetHtmlElementByTagSafe("span", "Sources", false, true);
             MakeAction(element, "Click");
-            WriteLog("Source load");
+            WriteLog("Source load", false);
 
             UpdateClearCacheProgressAndStatus("Clicking Kernel_AD");
             GetHtmlElementByTagSafe("span", "Kernel_AD", false, false);
@@ -105,11 +106,11 @@ namespace SupportTools
             element = bottomEl.Parent;
 
             MakeAction(element, "Click");
-            WriteLog("Kernel-AD load");
+            WriteLog("Kernel-AD load", false);
 
             UpdateClearCacheProgressAndStatus("Clearing cache");
             MakeAction("authSources-clearCache", "Click", false);
-            WriteLog("Cache button click");
+            WriteLog("Cache button click", false);
             
             GetHtmlElementDelegate("msgBarTxt");
 
@@ -376,7 +377,7 @@ namespace SupportTools
             AcceptSslCertificate();
         }
 
-        public void WriteLog(string Message)
+        public void WriteLog(string Message, bool useDelimiter)
         {
             if (chkEnableLogging.Checked)
             {
@@ -385,7 +386,14 @@ namespace SupportTools
             
                 using (StreamWriter str_output = new StreamWriter(WriteLogPath + (WriteLogPath == "" ? "" : "\\") + "logSuppApp.txt", true))
                 {
-                    str_output.WriteLine(CurrentTime + " -> " + Message);
+                    if (!useDelimiter)
+                    {
+                        str_output.WriteLine(CurrentTime + " -> " + Message);
+                    }
+                    else
+                    {
+                        str_output.WriteLine("--------------------");
+                    }
                 }
             }
 
@@ -406,7 +414,10 @@ namespace SupportTools
             {
                 ConfigurationData config = new ConfigurationData();
                 config.username = txtUsername.Text;
-                config.password = txtPassword.Text;
+                CryptoService.EncryptedBundle eb = new CryptoService.EncryptedBundle();
+                eb = CryptoService.EncryptString(txtPassword.Text, 20, "s8Jkd74hHdyrO9h6");
+                config.password = eb.EncryptedString;
+                config.key = eb.EncryptedKey;
                 config.startPage = txtClearpassStartPageUrl.Text;
                 config.enableLogging = chkEnableLogging.Checked;
                 config.logPath = txtLogPath.Text;
@@ -426,7 +437,10 @@ namespace SupportTools
                 FileStream readStream = new FileStream("config.xml", FileMode.Open, FileAccess.Read, FileShare.Read);
                 ConfigurationData config = (ConfigurationData)xmlSr.Deserialize(readStream);
                 txtUsername.Text = config.username;
-                txtPassword.Text = config.password;
+                CryptoService.EncryptedBundle eb = new CryptoService.EncryptedBundle();
+                eb.EncryptedString = config.password;
+                eb.EncryptedKey = config.key;
+                txtPassword.Text = CryptoService.DecryptString(eb, "s8Jkd74hHdyrO9h6");
                 txtClearpassStartPageUrl.Text = config.startPage;
                 chkEnableLogging.Checked = config.enableLogging;
                 txtLogPath.Text = config.logPath;
